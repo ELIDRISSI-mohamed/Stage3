@@ -39,42 +39,31 @@ function readFile(fileName){
     }
     return posts;
 }
-router.post("/add", verifyToken, upload.single('file'), (req, res)=>{
-    
-    jwt.verify(req.token, process.env.TOKEN_SECRET, (err,data)=>{
-        if(err) 
-                res.sendStatus(403);
-        else{
-            if(data.result.role == 'admin'){  
-                if(req.body.formationName && req.file){
-                    data = readFile(req.file.filename);
-                    data.forEach(element => {
-                        let participant = {
-                            formationName: req.body.formationName,
-                            nom: element.nom,
-                            prenom: element.prenom,
-                            email: element.email,
-                            adresse: element.adresse,
-                            role: "user"
-                        }
-
-                        dbo.collection('participants').insertOne(participant, (err, result)=> {
-                            if (err) 
-                                res.send(err);
-                            else{
-                            }
-                            
-                        })
-                    });
-                    res.status(200).send({MESSAGE: "ADD_SUCCES"});
-                } else{
-                    res.send({ERROR: "BODY_ERREUR"})
-                }
-            } else{
-                res.send({ERROR: "NO_ACCESS"})
+router.post("/add", upload.single('file'), (req, res)=>{
+    if(req.body.formationName && req.file){
+        data = readFile(req.file.filename);
+        data.forEach(element => {
+            let participant = {
+                formationName: req.body.formationName,
+                nom: element.nom,
+                prenom: element.prenom,
+                email: element.email,
+                adresse: element.adresse,
+                role: "user"
             }
-        }
-    })
+
+            dbo.collection('participants').insertOne(participant, (err, result)=> {
+                if (err) 
+                    res.send(err);
+                else{
+                }
+                
+            })
+        });
+        res.status(200).send({MESSAGE: "ADD_SUCCES"});
+    } else{
+        res.send({ERROR: "BODY_ERREUR"})
+    }
 })
 
 
