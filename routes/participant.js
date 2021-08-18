@@ -94,10 +94,27 @@ router.delete("/delete", (req, res)=>{
         if (err) 
             throw err;
         else{
-            res.status(200).send("DELETE_SUCCES");
+            if(result.deletedCount != 0)  res.status(200).send({MESSAGE: "DELETE_SUCCES"});
+            else res.send({MESSAGE: "NOT_EXIST"})
         }
     })
 })
+
+router.post("/findFormationsParticiper", (req, res)=>{
+    if(req.body.nom && req.body.prenom){
+        dbo.collection('participants').distinct("formationName", {nom: req.body.nom, prenom: req.body.prenom}, (err, result)=> {
+            if (err) 
+                res.send(err);
+            else{
+                res.status(200).send(result);
+            }
+            
+        })
+    } else {
+        res.send({ERROR: "BODY_ERROR"})
+    }
+})
+
 
 
 

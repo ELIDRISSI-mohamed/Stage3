@@ -6,6 +6,8 @@ var logger = require('morgan');
 var MongoClient = require('mongodb').MongoClient;
 const dotenv = require('dotenv');
 
+const port = 3333
+
 var signInRouter = require('./routes/signIn');
 var participantRouter = require('./routes/participant');
 
@@ -35,6 +37,10 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
 app.use('/users', signInRouter);
 app.use('/participants', participantRouter);
 
+
+app.listen(port, ()=>{
+    console.log(`app listening at port: ${port}`)
+})
 
 module.exports = app;
  
