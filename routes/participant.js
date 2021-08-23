@@ -45,8 +45,8 @@ router.post("/add", upload.single('file'), (req, res)=>{
         data.forEach(element => {
             let participant = {
                 formationName: req.body.formationName,
-                nom: element.nom,
-                prenom: element.prenom,
+                nom: element.nom.toLowerCase(),
+                prenom: element.prenom.toLowerCase(),
                 email: element.email,
                 adresse: element.adresse,
                 role: "user"
@@ -95,7 +95,7 @@ router.delete("/delete", (req, res)=>{
             throw err;
         else{
             if(result.deletedCount != 0)  res.status(200).send({MESSAGE: "DELETE_SUCCES"});
-            else res.send({MESSAGE: "NOT_EXIST"})
+            else res.send({ERROR: "N'existe pas"})
         }
     })
 })
