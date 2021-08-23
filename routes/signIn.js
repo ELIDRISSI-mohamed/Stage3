@@ -6,9 +6,10 @@ const jwt = require('jsonwebtoken');
 router.post('/signIn', function(req, res) {
   if(req.body.nom && req.body.prenom){
     var user = {
-      'nom' : req.body.nom,
-      'prenom' : req.body.prenom
+      'nom' : req.body.nom.toLowerCase(),
+      'prenom' : req.body.prenom.toLowerCase()
     }
+    console.log(user)
   
     dbo.collection("participants").findOne({'nom':user.nom, 'prenom': user.prenom}, (err,result)=>{
         if(err) 
@@ -24,7 +25,7 @@ router.post('/signIn', function(req, res) {
                   res.status(200).json({"token" : token, "role" : "admin"});
               }
             } else {
-                res.status(403).json({"ERROR" : "USER_NOT_EXIST"});
+                res.json({ERROR : "Incorrect nom ou prenom."});
             }
         }
     })
