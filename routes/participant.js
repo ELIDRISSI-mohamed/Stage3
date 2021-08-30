@@ -1,13 +1,25 @@
 var express = require('express');
 var router = express.Router();
 const xlsx = require('xlsx');
-const multer  = require('multer')
-const upload = multer({ dest: 'public/excel/' })
+const multer  = require('multer');
+const path = require('path');
+const fs = require('fs')
 const jwt = require('jsonwebtoken');
 
 const verifyToken = require('../middleware/verifyToken');
+const { Console } = require('console');
 
-
+var storage =   multer.diskStorage({
+    destination: function (req, file, callback) {
+        if(!path.extname(file.originalname).localeCompare('.xlsx')) callback(null, './public/excel/');
+        else callback(null, './public/images/');
+    },
+    filename: function (req, file, callback) {
+        if(!path.extname(file.originalname).localeCompare('.xlsx')) callback(null, file.originalname);
+        else callback(null, req.body.formationName+''+path.extname(file.originalname));
+    }
+});
+var upload = multer({ storage : storage });
 
 function readFile(fileName){
     const filePath = "public/excel/"+fileName;
@@ -39,9 +51,9 @@ function readFile(fileName){
     }
     return posts;
 }
-router.post("/add", upload.single('file'), (req, res)=>{
-    if(req.body.formationName && req.file){
-        data = readFile(req.file.filename);
+router.post("/add", upload.array('file'), (req, res)=>{
+    if(req.body.formationName && req.files){
+        data = readFile(req.files[0].originalname);
         data.forEach(element => {
             let participant = {
                 formationName: req.body.formationName,
@@ -66,6 +78,14 @@ router.post("/add", upload.single('file'), (req, res)=>{
     }
 })
 
+router.post("/addCertificate", upload.single('img'), (req, res)=>{
+    if(req.file){
+            res.send("ok")
+        
+    } else{
+        res.send({ERROR: "BODY_ERROR"})
+    }
+})
 
 router.get("/findByFormation/:formationName", (req, res)=>{
     dbo.collection('participants').find({'formationName': req.params.formationName}).toArray((err, result)=> {
