@@ -9,7 +9,6 @@ router.post('/signIn', function(req, res) {
       'nom' : req.body.nom.toLowerCase(),
       'prenom' : req.body.prenom.toLowerCase()
     }
-    console.log(user)
   
     dbo.collection("participants").findOne({'nom':user.nom, 'prenom': user.prenom}, (err,result)=>{
         if(err) 
